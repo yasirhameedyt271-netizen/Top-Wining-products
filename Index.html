@@ -1,274 +1,54 @@
-#!/usr/bin/env python3
-"""
-rank_gulf_winners.py
-Raw scraper exports (CSV/JSON) from Amazon SA, Noon, Shein, Trendyol
-  -> weighted winner_score -> Top 100
-  -> rank_change / price_change_sar / updated_at vs the previous run
-  -> optional local image download
-  -> gulf_top_100_winners.json (for live polling) + gulf_top_100_winners.csv (for Upload CSV)
+name: Auto-update GulfWinners data
 
-Usage:
-  python rank_gulf_winners.py --input-dir ./raw --out-dir . [--download-images] [--image-base-url https://you.github.io/repo/]
-"""
-import argparse, json, re
-from datetime import datetime, timezone
-from difflib import SequenceMatcher
-from io import BytesIO
-from pathlib import Path
+on:
+  schedule:
+    - cron: "0 */6 * * *"      # every 6 hours (UTC)
+  workflow_dispatch:            # lets you run it manually from the Actions tab
 
-import numpy as np
-import pandas as pd
+permissions:
+  contents: write               # needed to commit the updated files
 
-# ---- 1. Config ---------------------------------------------------------
-PLATFORMS = {"amazon": "Amazon SA", "noon": "Noon", "shein": "Shein", "trendyol": "Trendyol"}
-PRICE_TO_SAR = {"Amazon SA": 1.0, "Noon": 1.0, "Shein": 1.0, "Trendyol": 0.11}  # edit to current rates
-WEIGHTS = {"rank": 0.30, "rating": 0.20, "reviews": 0.20, "discount": 0.10, "cross": 0.20}
-SIMILARITY_THRESHOLD = 0.72
+concurrency:
+  group: update-winners
+  cancel-in-progress: false
 
-ALIASES = {
-    "title": ["title", "name", "productname", "goodsname"],
-    "category": ["category", "categoryname", "department", "breadcrumbs"],
-    "price": ["pricesar", "price", "currentprice", "saleprice", "finalprice", "salesprice"],
-    "orig": ["originalpricesar", "originalprice", "listprice", "wasprice", "retailprice", "oldprice"],
-    "rating": ["rating", "stars", "productrating", "averagerating", "avgrating"],
-    "reviews": ["reviewscount", "reviewcount", "reviews", "ratingscount", "numreviews"],
-    "bsr": ["bestsellerrank", "bestsellersrank", "bsr", "rank", "position"],
-    "image": ["imageurl", "image", "goodsimg", "thumbnail", "mainimage", "img", "imgurl"],
-    "gallery": ["galleryurls", "images", "imageurls", "additionalimages", "gallery", "goodsimgs"],
-    "url": ["producturl", "url", "link", "goodsurl"],
-    "insight": ["insight", "description", "notes"],
-}
-CATEGORY_RULES = [
-    (r"electr|mobile|phone|computer|audio|camera", "Electronics"),
-    (r"home|kitchen|furnit", "Home & Kitchen"),
-    (r"beauty|care|skin|hair|perfume", "Beauty & Personal Care"),
-    (r"fit|sport|gym", "Fitness"),
-    (r"car|auto|vehicle", "Car Accessories"),
-    (r"fashion|cloth|shoe|women|men|bag|watch|dress", "Fashion"),
-]
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
 
-# ---- 2. Load and normalise --------------------------------------------
-def norm_key(k): return re.sub(r"[\s_\-]", "", str(k).lower())
+      - name: Install dependencies
+        run: pip install pandas numpy requests pillow
 
+      # OPTIONAL: refresh ./raw from your scraper here (for example an Apify dataset export),
+      # so the raw files change between runs. Without this step the script re-ranks whatever is in ./raw.
+      # - name: Fetch latest scrapes
+      #   run: python scripts/fetch_scrapes.py
+      #   env:
+      #     APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
 
-def to_num(v) -> float:
-    if isinstance(v, dict):
-        v = v.get("value", v.get("amount", v.get("current", v.get("price"))))
-    cleaned = re.sub(r"[^0-9.]", "", str(v).replace(",", "")) if v is not None else ""
-    try:
-        return float(cleaned)
-    except ValueError:
-        return 0.0
+      - name: Rank winners and download images
+        run: |
+          python rank_gulf_winners.py \
+            --input-dir raw \
+            --out-dir . \
+            --download-images \
+            --image-base-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
 
-
-def to_url(v) -> str:
-    if isinstance(v, dict):
-        v = v.get("url") or v.get("src") or ""
-    v = str(v).strip()
-    return v if v.startswith("https://") else ""
-
-
-def gallery_list(v) -> list:
-    items = v if isinstance(v, list) else re.split(r"[|;\n]", str(v or ""))
-    return [u for u in (to_url(x) for x in items) if u]
-
-
-def read_file(path: Path) -> pd.DataFrame:
-    if path.suffix.lower() == ".json":
-        data = json.loads(path.read_text(encoding="utf-8-sig"))
-        if isinstance(data, dict):
-            data = data.get("products") or data.get("items") or data.get("data") or []
-        return pd.DataFrame(data)
-    return pd.read_csv(path)
-
-
-def load_platform(path: Path, platform: str) -> pd.DataFrame:
-    raw = read_file(path)
-    cols = {norm_key(c): c for c in raw.columns}
-
-    def col(field):
-        for alias in ALIASES[field]:
-            if alias in cols:
-                return raw[cols[alias]]
-        return pd.Series([None] * len(raw))
-
-    out = pd.DataFrame({
-        "title": col("title").astype(str).str.strip(),
-        "category": col("category").map(lambda v: " ".join(map(str, v)) if isinstance(v, list) else str(v)),
-        "price": col("price").map(to_num) * PRICE_TO_SAR[platform],
-        "orig": col("orig").map(to_num) * PRICE_TO_SAR[platform],
-        "rating": col("rating").map(to_num).clip(0, 5),
-        "reviews": col("reviews").map(to_num),
-        "bsr": col("bsr").map(to_num),
-        "image": col("image").map(to_url),
-        "gallery": col("gallery").map(gallery_list),
-        "url": col("url").astype(str),
-        "insight": col("insight"),
-    })
-    out["platform"] = platform
-    missing = (out["bsr"] <= 0).values
-    out.loc[missing, "bsr"] = np.arange(1, len(out) + 1)[missing]   # fall back to row order
-    return out[(out["title"].str.len() > 2) & (out["price"] > 0)]
-
-
-def map_category(text) -> str:
-    t = str(text).lower()
-    for pattern, cat in CATEGORY_RULES:
-        if re.search(pattern, t):
-            return cat
-    return "Electronics"
-
-
-# ---- 3. Scoring --------------------------------------------------------
-def clean_title(t): return " ".join(sorted(re.sub(r"[^a-z0-9 ]", " ", t.lower()).split()))
-
-
-def cross_platform_counts(df) -> pd.Series:
-    titles, plats, counts = df["title"].map(clean_title).tolist(), df["platform"].tolist(), []
-    for i, t in enumerate(titles):
-        found = {plats[i]}
-        for j, u in enumerate(titles):
-            if plats[j] not in found and SequenceMatcher(None, t, u).ratio() >= SIMILARITY_THRESHOLD:
-                found.add(plats[j])
-        counts.append(len(found))
-    return pd.Series(counts, index=df.index)
-
-
-def pct(s, ascending=True): return s.rank(pct=True, ascending=ascending).fillna(0)
-
-
-def score(df) -> pd.DataFrame:
-    g = df.groupby("platform")
-    df["s_rank"] = g["bsr"].transform(lambda s: pct(s, ascending=False))
-    df["s_rating"] = ((df["rating"] - 3.5) / 1.5).clip(0, 1)
-    df["s_reviews"] = g["reviews"].transform(lambda s: pct(np.log1p(s)))
-    df["discount"] = np.where(df["orig"] > df["price"], (1 - df["price"] / df["orig"]) * 100, 0)
-    df["s_discount"] = (df["discount"] / 50).clip(0, 1)
-    df["platforms_seen"] = cross_platform_counts(df)
-    df["s_cross"] = (df["platforms_seen"] - 1) / (len(PLATFORMS) - 1)
-    df["winner_score"] = (100 * sum(WEIGHTS[k] * df[f"s_{k}"] for k in WEIGHTS)).round().astype(int)
-    return df
-
-
-# ---- 4. Compare with the previous run ---------------------------------
-def pkey(title, platform): return f"{title}|{platform}".lower()
-
-
-def add_movement(out: pd.DataFrame, prev_path: Path) -> pd.DataFrame:
-    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    prev = {}
-    if prev_path.exists():
-        try:
-            prev = {pkey(p["title"], p["platform"]): p for p in json.loads(prev_path.read_text(encoding="utf-8"))}
-        except Exception as e:
-            print(f"Could not read previous file ({e}); treating this run as the first.")
-    changes, drops, stamps = [], [], []
-    for _, r in out.iterrows():
-        o = prev.get(pkey(r["title"], r["platform"]))
-        if not prev:                     # first ever run: no movement data
-            changes.append(0); drops.append(0); stamps.append(now)
-        elif o is None:
-            changes.append("NEW"); drops.append(0); stamps.append(now)
-        else:
-            rc, pc = int(o["rank"]) - int(r["rank"]), int(r["price_sar"]) - int(o["price_sar"])
-            changes.append(rc); drops.append(pc)
-            stamps.append(now if (rc or pc) else (o.get("updated_at") or now))
-    out["rank_change"], out["price_change_sar"], out["updated_at"] = changes, drops, stamps
-    return out
-
-
-# ---- 5. Optional image download ---------------------------------------
-def download_images(out: pd.DataFrame, image_dir: Path, base_url: str) -> pd.DataFrame:
-    import requests
-    try:
-        from PIL import Image
-    except ImportError:
-        Image = None
-    image_dir.mkdir(parents=True, exist_ok=True)
-    headers = {"User-Agent": "Mozilla/5.0 (compatible; GulfWinnersBot/1.0)"}
-    ok = 0
-    for i, r in out.iterrows():
-        if not r["image_url"]:
-            continue
-        dest = image_dir / f"rank_{int(r['rank']):03d}.jpg"
-        try:
-            resp = requests.get(r["image_url"], headers=headers, timeout=20)
-            resp.raise_for_status()
-            if Image:   # normalise to a white-backed JPEG, max 800px
-                im = Image.open(BytesIO(resp.content))
-                if im.mode in ("RGBA", "LA", "P"):
-                    im = im.convert("RGBA")
-                    bg = Image.new("RGB", im.size, (255, 255, 255))
-                    bg.paste(im, mask=im.split()[-1])
-                    im = bg
-                im.convert("RGB").thumbnail((800, 800))
-                im2 = im.convert("RGB"); im2.thumbnail((800, 800)); im2.save(dest, "JPEG", quality=85)
-            else:
-                dest.write_bytes(resp.content)
-            out.at[i, "image_url"] = f"{base_url}{image_dir.name}/{dest.name}"
-            ok += 1
-        except Exception as e:
-            print(f"Image failed for rank {r['rank']}: {e} (keeping original URL)")
-    print(f"Downloaded {ok}/{len(out)} images to {image_dir}/")
-    return out
-
-
-# ---- 6. Main -----------------------------------------------------------
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--input-dir", default="./raw")
-    ap.add_argument("--out-dir", default=".")
-    ap.add_argument("--download-images", action="store_true")
-    ap.add_argument("--image-base-url", default="", help="Public URL prefix ending in '/', e.g. https://user.github.io/repo/")
-    args = ap.parse_args()
-
-    out_dir = Path(args.out_dir)
-    json_path, csv_path = out_dir / "gulf_top_100_winners.json", out_dir / "gulf_top_100_winners.csv"
-
-    frames = []
-    for path in sorted(Path(args.input_dir).glob("*")):
-        if path.suffix.lower() in (".csv", ".json"):
-            for key, platform in PLATFORMS.items():
-                if key in path.name.lower():
-                    frames.append(load_platform(path, platform))
-                    print(f"Loaded {len(frames[-1])} rows from {path.name} ({platform})")
-    if not frames:
-        raise SystemExit("No raw files found (name them amazon*, noon*, shein*, trendyol*; .csv/.json).")
-
-    df = pd.concat(frames, ignore_index=True)
-    total = len(df)
-    df["category"] = df["category"].map(map_category)
-    df = score(df)
-    df["key"] = df["title"].map(clean_title).str.split().str[:5].str.join(" ")
-    top = df.sort_values("winner_score", ascending=False).drop_duplicates("key").head(100).reset_index(drop=True)
-
-    top["insight"] = top.apply(
-        lambda r: r["insight"] if isinstance(r["insight"], str) and r["insight"].strip()
-        else f"{r['rating']:.1f}★ from {int(r['reviews']):,} reviews on {r['platform']}"
-             + (f", now {r['discount']:.0f}% off." if r["discount"] >= 5 else "."), axis=1)
-
-    out = pd.DataFrame({
-        "rank": top.index + 1, "title": top["title"], "platform": top["platform"], "category": top["category"],
-        "price_sar": top["price"].round().astype(int),
-        "original_price_sar": top["orig"].where(top["orig"] > top["price"], 0).round().astype(int),
-        "rating": top["rating"].round(1), "reviews_count": top["reviews"].astype(int),
-        "winner_score": top["winner_score"],
-        "bestseller_tag": "#" + (top.groupby("category").cumcount() + 1).astype(str) + " in " + top["category"],
-        "image_url": top["image"], "gallery_urls": top["gallery"].map("|".join),
-        "product_url": top["url"], "insight": top["insight"],
-    })
-
-    out = add_movement(out, json_path)                       # compares with the previous JSON
-    if args.download_images:
-        out = download_images(out, out_dir / "images", args.image_base_url)
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out.to_csv(csv_path, index=False, encoding="utf-8-sig")
-    records = json.loads(out.replace({0: 0}).to_json(orient="records", force_ascii=False))
-    json_path.write_text(json.dumps(records, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"Scored {total} listings -> wrote Top {len(out)} to {json_path.name} and {csv_path.name}")
-
-
-if __name__ == "__main__":
-    main()
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gulf_top_100_winners.json gulf_top_100_winners.csv images
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update winners $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
