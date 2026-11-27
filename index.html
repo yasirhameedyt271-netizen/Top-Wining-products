@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>GulfWinners.sa — Top Winning Products Across Gulf Marketplaces</title>
+  <style>
+    :root {
+      --amz-navy: #131921;
+      --amz-slate: #232F3E;
+      --amz-bg: #EAEDED;
+      --amz-white: #FFFFFF;
+      --amz-border: #D5D9D9;
+      --amz-text: #0F1111;
+      --amz-muted: #565959;
+      --amz-orange: #FF9900;
+      --amz-search-btn: #FEBD69;
+      --amz-search-hover: #F3A847;
+      --amz-yellow: #FFD814;
+      --amz-yellow-hover: #F7CA00;
+      --amz-yellow-border: #FCD200;
+      --amz-star: #FFA41C;
+      --amz-ribbon: #C45500;
+      --amz-deal: #B12704;
+      --amz-link: #007185;
+      --amz-link-hover: #C7511F;
+      --amz-green: #067D62;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--amz-bg);
+      color: var(--amz-text);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Amazon-Style Header */
+    .top-nav {
+      background-color: var(--amz-navy);
+      color: #FFFFFF;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    .nav-main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #FFFFFF;
+      padding: 4px 6px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .brand:hover {
+      border-color: #FFFFFF;
+    }
+
+    .brand-logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+
+    .brand-logo span.domain {
+      color: var(--amz-orange);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .smile-bar {
+      width: 58px;
+      height: 5px;
+      border-bottom: 3px solid var(--amz-orange);
+      border-radius: 0 0 50% 50%;
+      margin-top: 2px;
+    }
+
+    .deliver-pill {
+      display: none;
+      flex-direction: column;
+      font-size: 0.75rem;
+      color: #CCCCCC;
+      padding: 4px 8px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+    }
+
+    .deliver-pill strong {
+      color: #FFFFFF;
+      font-size: 0.85rem;
+    }
+
+    /* Search Bar */
+    .search-wrap {
+      flex: 1 1 280px;
+      display: flex;
+      height: 42px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #FFFFFF;
+      border: 2px solid transparent;
+    }
+
+    .search-wrap:focus-within {
+      border-color: var(--amz-orange);
+      box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.35);
+    }
+
+    .search-select {
+      background: #E6E6E6;
+      border: none;
+      border-right: 1px solid #CDCDCD;
+      color: #333333;
+      padding: 0 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      max-width: 120px;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      padding: 0 12px;
+      font-size: 0.95rem;
+      color: var(--amz-text);
+      outline: none;
+      min-width: 0;
+    }
+
+    .search-btn {
+      background: var(--amz-search-btn);
+      border: none;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #111111;
+      transition: background 0.15s ease;
+    }
+
+    .search-btn:hover {
+      background: var(--amz-search-hover);
+    }
+
+    .nav-stats {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: #DDDDDD;
+    }
+
+    .nav-stat-box {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .nav-stat-box strong {
+      color: #FFFFFF;
+      font-size: 0.9rem;
+    }
+
+    /* Sub Navigation Bar */
+    .sub-nav {
+      background-color: var(--amz-slate);
+      color: #FFFFFF;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sub-nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .sub-nav-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill-btn {
+      background: transparent;
+      color: #FFFFFF;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 7px 12px;
+      min-height: 36px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pill-btn:hover {
+      border-color: #FFFFFF;
+    }
+
+    .pill-btn.active {
+      background: rgba(255, 153, 0, 0.2);
+      border-color: var(--amz-orange);
+      color: #FFD88A;
+    }
+
+    /* Hero Banner */
+    .hero-strip {
+      background: linear-gradient(180deg, #232F3E 0%, #37475A 65%, var(--amz-bg) 100%);
+      padding: 20px 14px 28px;
+      color: #FFFFFF;
+    }
+
+    .hero-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(19, 25, 33, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      padding: 18px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(1.25rem, 3.2vw, 1.85rem);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .hero-text h1 span {
+      color: var(--amz-orange);
+    }
+
+    .hero-text p {
+      color: #D5DBDB;
+      font-size: 0.9rem;
+      max-width: 720px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .kpi-card {
+      background: #131921;
+      border: 1px solid #3A4553;
+      border-radius: 6px;
+      padding: 8px 12px;
+      min-width: 110px;
+    }
+
+    .kpi-label {
+      font-size: 0.72rem;
+      color: #AAB7B8;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .kpi-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--amz-orange);
+    }
+
+    /* Main Workspace Container */
+    .main-container {
+      max-width: 1400px;
+      margin: -12px auto 0;
+      padding: 0 14px 48px;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--amz-white);
+      border: 1px solid var(--amz-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 1px 2px rgba(15, 17, 17, 0.06);
+    }
+
+    .status-info {
+      font-size: 0.86rem;
+      color: var(--amz-text);
+    }
+
+    .status-info strong {
+      color: var(--amz-ribbon);
+    }
+
+    .toolbar-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-select {
+      background: #F0F2F2;
+      border: 1px solid #D5D9D9;
+      border-radius: 8px;
+      padding: 8px 12px;
+      min-height: 40px;
+      font-size: 0.85rem;
+      color: var(--amz-text);
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(15, 17, 17, 0.08);
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (min-width: 520px) {
+      .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 900px) {
+      .deliver-pill {
+        display: flex;
+      }
+      .product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .product-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    /* Amazon Product Card */
+    .product-card {
+      background: var(--amz-white);
+      border: 1px solid var(--amz-border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 4px 14px rgba(15, 17, 17, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .card-top-ribbon {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #F7FAFA;
+      border-bottom: 1px solid #EAEDED;
+      padding-right: 10px;
+    }
+
+    .bestseller-flag {
+      background: var(--amz-ribbon);
+      color: #FFFFFF;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 5px 12px 5px 10px;
+      clip-path: polygon(0 0, 100% 0, 92% 100%, 0% 100%);
+      letter-spacing: 0.2px;
+    }
+
+    .rank-trend {
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .trend-up {
+      color: var(--amz-green);
+    }
+
+    .trend-down {
+      color: var(--amz-deal);
+    }
+
+    .trend-new {
+      color: var(--amz-link);
+    }
+
+    .card-visual {
+      background: #F8F9FA;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #F0F2F2;
+      gap: 10px;
+    }
+
+    .visual-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      background: #FFFFFF;
+      border: 1px solid #E3E6E6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--amz-slate);
+    }
+
+    .platform-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #EDFDFF;
+      color: var(--amz-link);
+      border: 1px solid #BCE8F1;
+    }
+
+    .category-label {
+      font-size: 0.75rem;
+      color: var(--amz-muted);
+      margin-top: 3px;
+    }
+
+    .card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .product-title {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--amz-text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.75em;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+    }
+
+    .stars {
+      color: var(--amz-star);
+      letter-spacing: 1px;
+      font-size: 0.95rem;
+    }
+
+    .reviews-count {
+      color: var(--amz-link);
+      font-weight: 500;
+    }
+
+    .deal-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .deal-pill {
+      background: var(--amz-deal);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .deal-text {
+      color: var(--amz-deal);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .currency {
+      font-size: 0.78rem;
+      font-weight: 600;
+      vertical-align: super;
+    }
+
+    .price-whole {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--amz-text);
+    }
+
+    .orig-price {
+      font-size: 0.8rem;
+      color: var(--amz-muted);
+      text-decoration: line-through;
+    }
+
+    .winner-meter {
+      background: #F7FAFA;
+      border: 1px solid #E3E6E6;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .meter-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .meter-score {
+      color: var(--amz-green);
+    }
+
+    .meter-track {
+      width: 100%;
+      height: 6px;
+      background: #E3E6E6;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF9900, #067D62);
+      border-radius: 999px;
+    }
+
+    .insight-box {
+      font-size: 0.8rem;
+      color: var(--amz-muted);
+      background: #FFFDF7;
+      border-left: 3px solid var(--amz-orange);
+      padding: 6px 8px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .card-actions {
+      padding: 0 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .btn-amz-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 40px;
+      background: var(--amz-yellow);
+      border: 1px solid var(--amz-yellow-border);
+      border-radius: 20px;
+      color: var(--amz-text);
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(213, 217, 217, 0.5);
+      transition: background 0.15s ease;
+    }
+
+    .btn-amz-primary:hover {
+      background: var(--amz-yellow-hover);
+    }
+
+    .btn-amz-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 38px;
+      background: #FFA41C;
+      border: 1px solid #FF8F00;
+      border-radius: 20px;
+      color: var(--amz-text);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 17, 17, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 10px;
+      max-width: 520px;
+      width: 100%;
+      padding: 20px;
+      border: 1px solid var(--amz-border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      border-bottom: 1px solid #EAEDED;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .modal-close {
+      background: #F0F2F2;
+      border: 1px solid #D5D9D9;
+      border-radius: 6px;
+      width: 34px;
+      height: 34px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .modal-stat {
+      background: #F7FAFA;
+      border: 1px solid #E3E6E6;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+    }
+
+    .modal-stat span {
+      display: block;
+      color: var(--amz-muted);
+      font-size: 0.74rem;
+    }
+
+    /* Footer */
+    .amz-footer {
+      background: var(--amz-slate);
+      color: #DDDDDD;
+      margin-top: 24px;
+    }
+
+    .back-to-top {
+      display: block;
+      width: 100%;
+      background: #37475A;
+      color: #FFFFFF;
+      text-align: center;
+      padding: 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    .back-to-top:hover {
+      background: #485769;
+    }
+
+    .footer-bottom {
+      background: var(--amz-navy);
+      text-align: center;
+      padding: 20px 14px;
+      font-size: 0.8rem;
+      color: #999999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Amazon-Style Navigation -->
+  <header class="top-nav">
+    <div class="nav-main">
+      <a href="#top" class="brand" aria-label="GulfWinners Home">
+        <div class="brand-logo">
+          <div>GulfWinners<span class="domain">.sa</span></div>
+          <div class="smile-bar"></div>
+        </div>
+      </a>
+
+      <div class="deliver-pill">
+        <span>Tracking Market</span>
+        <strong>GCC &amp; Saudi Arabia</strong>
+      </div>
+
+      <div class="search-wrap" role="search">
+        <select id="platformSelect" class="search-select" aria-label="Filter by Marketplace">
+          <option value="all">All Stores</option>
+          <option value="Amazon SA">Amazon SA</option>
+          <option value="Noon">Noon</option>
+          <option value="Shein">Shein</option>
+          <option value="Trendyol">Trendyol</option>
+        </select>
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search winning products, categories, or keywords..."
+          aria-label="Search products"
+        />
+        <button id="searchBtn" class="search-btn" type="button" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="nav-stats">
+        <div class="nav-stat-box">
+          <span>Ranked Items</span>
+          <strong id="navCount">0 Products</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Platform Sub-Bar -->
+    <nav class="sub-nav" aria-label="Marketplace Quick Filters">
+      <div class="sub-nav-inner" id="platformPills">
+        <button class="pill-btn active" data-platform="all">All Winning Products</button>
+        <button class="pill-btn" data-platform="Amazon SA">Amazon SA Bestsellers</button>
+        <button class="pill-btn" data-platform="Noon">Noon Top Picks</button>
+        <button class="pill-btn" data-platform="Shein">Shein Viral Trends</button>
+        <button class="pill-btn" data-platform="Trendyol">Trendyol Gulf Hits</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Summary Banner -->
+  <section class="hero-strip">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>Top Winning Products in <span>Saudi Arabia &amp; GCC</span></h1>
+        <p>Automated product research &amp; winner scoring across Amazon SA, Noon, Shein, and Trendyol — updated continuously with SAR pricing, discount signals, and customer review momentum.</p>
+      </div>
+      <div class="hero-badges">
+        <div class="kpi-card">
+          <div class="kpi-label">Active Winners</div>
+          <div class="kpi-value" id="kpiTotal">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Winner Score</div>
+          <div class="kpi-value" id="kpiAvgScore">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Data Feed</div>
+          <div class="kpi-value" id="kpiFeedStatus">Live JSON</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Storefront Body -->
+  <main class="main-container">
+    <div class="toolbar">
+      <div class="status-info" id="statusText">Loading top ranked products...</div>
+      <div class="toolbar-controls">
+        <select id="categoryFilter" class="control-select" aria-label="Filter by Category">
+          <option value="all">Category: All</option>
+        </select>
+        <select id="sortSelect" class="control-select" aria-label="Sort Products">
+          <option value="rank">Sort by: Best Winner Rank</option>
+          <option value="score">Sort by: Highest Winner Score</option>
+          <option value="discount">Sort by: Biggest Discount %</option>
+          <option value="reviews">Sort by: Most Customer Reviews</option>
+          <option value="price_asc">Price: Low to High (SAR)</option>
+          <option value="price_desc">Price: High to Low (SAR)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+  </main>
+
+  <!-- Product Research Modal -->
+  <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="platform-tag" id="modalPlatform">Amazon SA</span>
+          <h2 id="modalTitle" style="font-size: 1.05rem; margin-top: 6px;">Product Details</h2>
+        </div>
+        <button class="modal-close" id="closeModalBtn" aria-label="Close modal">&times;</button>
+      </div>
+      <p id="modalInsight" class="insight-box"></p>
+      <div class="modal-grid" id="modalStats"></div>
+      <a id="modalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="btn-amz-primary">
+        Check Live Listing on Marketplace
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="amz-footer">
+    <button class="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+      Back to top
+    </button>
+    <div class="footer-bottom">
+      <p><strong>GulfWinners.sa</strong> &bull; Custom Domain: yasirhasho.work.gd</p>
+      <p style="margin-top: 4px;">Automated Gulf E-Commerce Product Ranking Dashboard</p>
+    </div>
+  </footer>
+
+  <!-- Built-in JSON Fallback so the page works 100% offline or before first fetch -->
+  <script id="fallback-data" type="application/json">
+[
+  {
+    "title": "360° Rotating Makeup & Skincare Countertop Organizer Acrylic",
+    "platform": "Shein",
+    "category": "Beauty & Organization",
+    "rating": 4.9,
+    "reviews": 5120,
+    "price_sar": 54.0,
+    "original_price_sar": 92.0,
+    "discount_pct": 41,
+    "winner_score": 92.4,
+    "bestseller_tag": "#1 in Beauty & Organization",
+    "image_url": "",
+    "product_url": "https://ar.shein.com/pdsearch/Rotating%20Makeup%20Organizer/",
+    "insight": "#1 vanity organizer bestseller with over 5,100 reviews and 41% savings.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 1,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "6-Piece Waterproof Travel Luggage Organizer Compression Pouch Set",
+    "platform": "Shein",
+    "category": "Travel & Storage",
+    "rating": 4.9,
+    "reviews": 4310,
+    "price_sar": 42.0,
+    "original_price_sar": 75.0,
+    "discount_pct": 44,
+    "winner_score": 91.7,
+    "bestseller_tag": "#2 in Travel & Storage",
+    "image_url": "",
+    "product_url": "https://ar.shein.com/pdsearch/Travel%20Organizer%20Pouch%20Set/",
+    "insight": "Viral TikTok & Snapchat travel essential with 4,300+ verified reviews.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 2,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Portable Mini Handheld Fan & Nano Mist Cooler USB-C Rechargeable",
+    "platform": "Amazon SA",
+    "category": "Home & Cooling",
+    "rating": 4.8,
+    "reviews": 2840,
+    "price_sar": 64.0,
+    "original_price_sar": 115.0,
+    "discount_pct": 44,
+    "winner_score": 91.4,
+    "bestseller_tag": "#1 in Home & Cooling",
+    "image_url": "",
+    "product_url": "https://www.amazon.sa/s?k=Portable+Mini+Handheld+Fan+Mist+Cooler",
+    "insight": "High summer search velocity across Riyadh & Jeddah; 44% discount with strong 4.8-star social proof.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 3,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Reusable Non-Stick Silicone Air Fryer Liners Basket Set (2-Pack)",
+    "platform": "Noon",
+    "category": "Kitchen",
+    "rating": 4.8,
+    "reviews": 2250,
+    "price_sar": 38.0,
+    "original_price_sar": 69.0,
+    "discount_pct": 45,
+    "winner_score": 89.8,
+    "bestseller_tag": "#2 in Kitchen",
+    "image_url": "",
+    "product_url": "https://www.noon.com/saudi-en/search/?q=Silicone+Air+Fryer+Liners",
+    "insight": "High bundle potential; solves daily air fryer cleanup pain point.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 4,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "MagSafe 15W Wireless Magnetic Car Phone Mount Fast Charger",
+    "platform": "Noon",
+    "category": "Car Accessories",
+    "rating": 4.7,
+    "reviews": 1920,
+    "price_sar": 79.0,
+    "original_price_sar": 139.0,
+    "discount_pct": 43,
+    "winner_score": 89.5,
+    "bestseller_tag": "#1 in Car Accessories",
+    "image_url": "",
+    "product_url": "https://www.noon.com/saudi-en/search/?q=Wireless+Magnetic+Car+Phone+Mount+Charger",
+    "insight": "Top daily commuter impulse buy in KSA & UAE with strong repeat gift demand.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 5,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "RGB Sunset Projection Ambient Night Lamp with App & Remote Control",
+    "platform": "Trendyol",
+    "category": "Home Decor",
+    "rating": 4.6,
+    "reviews": 1540,
+    "price_sar": 55.0,
+    "original_price_sar": 93.5,
+    "discount_pct": 41,
+    "winner_score": 87.7,
+    "bestseller_tag": "#1 in Home Decor",
+    "image_url": "",
+    "product_url": "https://www.trendyol.com/sr?q=Sunset+Projection+Lamp",
+    "insight": "Strong bedroom decor trend in Gulf youth segment; converts to ~55 SAR.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 6,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Self-Cleaning Slicker Brush for Cats & Dogs One-Click Release",
+    "platform": "Shein",
+    "category": "Pet Supplies",
+    "rating": 4.8,
+    "reviews": 2640,
+    "price_sar": 29.0,
+    "original_price_sar": 52.0,
+    "discount_pct": 44,
+    "winner_score": 87.2,
+    "bestseller_tag": "#4 in Pet Supplies",
+    "image_url": "",
+    "product_url": "https://ar.shein.com/pdsearch/Self%20Cleaning%20Pet%20Brush/",
+    "insight": "Rapidly growing pet care niche in Riyadh & Dubai with high margin.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 7,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Foldable Laptop Stand Aluminum Ergonomic Ventilated Riser",
+    "platform": "Noon",
+    "category": "Office & Tech",
+    "rating": 4.8,
+    "reviews": 1760,
+    "price_sar": 45.0,
+    "original_price_sar": 85.0,
+    "discount_pct": 47,
+    "winner_score": 87.2,
+    "bestseller_tag": "#4 in Office & Tech",
+    "image_url": "",
+    "product_url": "https://www.noon.com/saudi-en/search/?q=Aluminum+Foldable+Laptop+Stand",
+    "insight": "Lightweight, low-shipping-cost evergreen winner with 47% discount.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 8,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Cordless Rechargeable Fabric Shaver & Lint Remover with LED Display",
+    "platform": "Amazon SA",
+    "category": "Home Care",
+    "rating": 4.7,
+    "reviews": 1680,
+    "price_sar": 49.0,
+    "original_price_sar": 89.0,
+    "discount_pct": 45,
+    "winner_score": 87.2,
+    "bestseller_tag": "#3 in Home Care",
+    "image_url": "",
+    "product_url": "https://www.amazon.sa/s?k=Rechargeable+Lint+Remover+LED",
+    "insight": "Consistent year-round problem-solver for thobes, abayas, and knitwear.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 9,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Stainless Steel Insulated Smart Temperature Display Vacuum Flask 500ml",
+    "platform": "Trendyol",
+    "category": "Drinkware",
+    "rating": 4.7,
+    "reviews": 1890,
+    "price_sar": 42.9,
+    "original_price_sar": 74.8,
+    "discount_pct": 43,
+    "winner_score": 86.8,
+    "bestseller_tag": "#3 in Drinkware",
+    "image_url": "",
+    "product_url": "https://www.trendyol.com/sr?q=Smart+Temperature+Vacuum+Flask",
+    "insight": "Strong everyday utility + customization/gifting appeal.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 10,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Magnetic Under-Cabinet Motion Sensor LED Strip Light Bar (3-Pack)",
+    "platform": "Trendyol",
+    "category": "Smart Lighting",
+    "rating": 4.8,
+    "reviews": 2110,
+    "price_sar": 68.2,
+    "original_price_sar": 108.9,
+    "discount_pct": 37,
+    "winner_score": 86.7,
+    "bestseller_tag": "#2 in Smart Lighting",
+    "image_url": "",
+    "product_url": "https://www.trendyol.com/sr?q=Motion+Sensor+LED+Light+Bar",
+    "insight": "Zero-wiring installation makes it an easy multi-pack upsell.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 11,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Portable Electric Espresso Maker for Car & Travel USB-C",
+    "platform": "Amazon SA",
+    "category": "Coffee & Travel",
+    "rating": 4.7,
+    "reviews": 1430,
+    "price_sar": 149.0,
+    "original_price_sar": 249.0,
+    "discount_pct": 40,
+    "winner_score": 86.3,
+    "bestseller_tag": "#2 in Coffee & Travel",
+    "image_url": "",
+    "product_url": "https://www.amazon.sa/s?k=Portable+Electric+Espresso+Maker",
+    "insight": "High-ticket winner tapping into Saudi specialty coffee culture.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 12,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Smart Posture Corrector Back Brace with Vibration Sensor Reminder",
+    "platform": "Amazon SA",
+    "category": "Health & Wellness",
+    "rating": 4.5,
+    "reviews": 1190,
+    "price_sar": 59.0,
+    "original_price_sar": 110.0,
+    "discount_pct": 46,
+    "winner_score": 84.2,
+    "bestseller_tag": "#4 in Health & Wellness",
+    "image_url": "",
+    "product_url": "https://www.amazon.sa/s?k=Smart+Posture+Corrector+Vibration",
+    "insight": "Strong video ad hook for office workers and students.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 13,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Ultrasonic Jewelry & Eyeglasses Cleaner Machine 45kHz Tank",
+    "platform": "Noon",
+    "category": "Gadgets",
+    "rating": 4.6,
+    "reviews": 980,
+    "price_sar": 95.0,
+    "original_price_sar": 165.0,
+    "discount_pct": 42,
+    "winner_score": 84.1,
+    "bestseller_tag": "#3 in Gadgets",
+    "image_url": "",
+    "product_url": "https://www.noon.com/saudi-en/search/?q=Ultrasonic+Jewelry+Cleaner",
+    "insight": "Visual before/after demonstration drives high ad click-through rates.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 14,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "4-in-1 Foldable Magnetic Wireless Charging Station for Phone, Watch & Buds",
+    "platform": "Noon",
+    "category": "Gadgets",
+    "rating": 4.7,
+    "reviews": 1490,
+    "price_sar": 129.0,
+    "original_price_sar": 219.0,
+    "discount_pct": 41,
+    "winner_score": 82.7,
+    "bestseller_tag": "#5 in Gadgets",
+    "image_url": "",
+    "product_url": "https://www.noon.com/saudi-en/search/?q=4+in+1+Wireless+Charging+Station",
+    "insight": "Declutters bedside tables; high perceived value and strong AOV.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 15,
+    "rank_change": 0,
+    "is_new": true
+  },
+  {
+    "title": "Electric Spin Scrubber Cordless Bathroom & Kitchen Cleaning Brush",
+    "platform": "Amazon SA",
+    "category": "Home Care",
+    "rating": 4.6,
+    "reviews": 1320,
+    "price_sar": 119.0,
+    "original_price_sar": 199.0,
+    "discount_pct": 40,
+    "winner_score": 81.5,
+    "bestseller_tag": "#5 in Home Care",
+    "image_url": "",
+    "product_url": "https://www.amazon.sa/s?k=Electric+Spin+Scrubber+Cordless",
+    "insight": "Proven short-form video hero product with 40% off.",
+    "updated_at": "2026-11-27T15:03:40Z",
+    "rank": 16,
+    "rank_change": 0,
+    "is_new": true
+  }
+]
+  </script>
+
+  <script>
+    let allProducts = [];
+    let selectedPlatform = "all";
+    let selectedCategory = "all";
+    let searchQuery = "";
+    let sortBy = "rank";
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderStars(rating) {
+      const full = Math.round(Math.min(5, Math.max(0, Number(rating) || 4.5)));
+      return "★".repeat(full) + "☆".repeat(5 - full);
+    }
+
+    function normalizeItem(item, index) {
+      const priceSar = Number(item.price_sar ?? item.price ?? 59) || 59;
+      const origSar = Number(item.original_price_sar ?? item.original_price ?? Math.round(priceSar * 1.35)) || priceSar;
+      const discountPct = Number(item.discount_pct ?? (origSar > priceSar ? Math.round(((origSar - priceSar) / origSar) * 100) : 0));
+      return {
+        rank: Number(item.rank) || index + 1,
+        rank_change: Number(item.rank_change) || 0,
+        is_new: Boolean(item.is_new),
+        title: item.title || item.name || "Winning Gulf Product",
+        platform: item.platform || "Amazon SA",
+        category: item.category || "Trending",
+        price_sar: priceSar,
+        original_price_sar: origSar,
+        discount_pct: discountPct,
+        rating: Number(item.rating) || 4.7,
+        reviews: Number(item.reviews) || 500,
+        winner_score: Number(item.winner_score ?? item.score) || 88.0,
+        product_url: item.product_url || item.url || "#",
+        insight: item.insight || "High demand signal across Gulf shoppers.",
+        updated_at: item.updated_at || ""
+      };
+    }
+
+    function populateCategories(items) {
+      const select = document.getElementById("categoryFilter");
+      const cats = Array.from(new Set(items.map((i) => i.category).filter(Boolean))).sort();
+      select.innerHTML = `<option value="all">Category: All (${cats.length})</option>` +
+        cats.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+    }
+
+    function updateKPIs(items) {
+      document.getElementById("navCount").textContent = `${items.length} Products`;
+      document.getElementById("kpiTotal").textContent = items.length;
+      const avg = items.length
+        ? (items.reduce((acc, p) => acc + p.winner_score, 0) / items.length).toFixed(1)
+        : "0.0";
+      document.getElementById("kpiAvgScore").textContent = `${avg}/100`;
+    }
+
+    function openProductModal(product) {
+      document.getElementById("modalPlatform").textContent = product.platform;
+      document.getElementById("modalTitle").textContent = product.title;
+      document.getElementById("modalInsight").textContent = product.insight;
+      document.getElementById("modalStats").innerHTML = `
+        <div class="modal-stat"><span>Current Rank</span><strong>#${product.rank} Overall</strong></div>
+        <div class="modal-stat"><span>Winner Score</span><strong>${product.winner_score} / 100</strong></div>
+        <div class="modal-stat"><span>Price (SAR)</span><strong>SAR ${product.price_sar.toFixed(2)} (${product.discount_pct}% OFF)</strong></div>
+        <div class="modal-stat"><span>Customer Proof</span><strong>${product.rating} ★ (${product.reviews.toLocaleString()} reviews)</strong></div>
+      `;
+      const link = document.getElementById("modalExternalLink");
+      link.href = product.product_url && product.product_url !== "#"
+        ? product.product_url
+        : `https://www.amazon.sa/s?k=${encodeURIComponent(product.title)}`;
+      document.getElementById("detailModal").classList.add("open");
+    }
+
+    function renderGrid() {
+      let filtered = allProducts.filter((p) => {
+        const matchPlatform = selectedPlatform === "all" || p.platform.toLowerCase() === selectedPlatform.toLowerCase();
+        const matchCategory = selectedCategory === "all" || p.category === selectedCategory;
+        const q = searchQuery.trim().toLowerCase();
+        const matchQuery = !q ||
+          p.title.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.platform.toLowerCase().includes(q);
+        return matchPlatform && matchCategory && matchQuery;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortBy === "score") return b.winner_score - a.winner_score;
+        if (sortBy === "discount") return b.discount_pct - a.discount_pct;
+        if (sortBy === "reviews") return b.reviews - a.reviews;
+        if (sortBy === "price_asc") return a.price_sar - b.price_sar;
+        if (sortBy === "price_desc") return b.price_sar - a.price_sar;
+        return a.rank - b.rank;
+      });
+
+      const statusText = document.getElementById("statusText");
+      statusText.innerHTML = `Showing <strong>${filtered.length}</strong> of <strong>${allProducts.length}</strong> winning Gulf products` +
+        (selectedPlatform !== "all" ? ` on <strong>${escapeHtml(selectedPlatform)}</strong>` : "");
+
+      const grid = document.getElementById("productGrid");
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="toolbar" style="grid-column: 1 / -1;">No matching products found. Try clearing your search or switching marketplace filters.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map((p, idx) => {
+        const trendHtml = p.is_new
+          ? `<span class="rank-trend trend-new">NEW ENTRY</span>`
+          : p.rank_change > 0
+            ? `<span class="rank-trend trend-up">▲ +${p.rank_change}</span>`
+            : p.rank_change < 0
+              ? `<span class="rank-trend trend-down">▼ ${p.rank_change}</span>`
+              : `<span class="rank-trend" style="color:#565959;">• Steady</span>`;
+
+        const targetUrl = p.product_url && p.product_url !== "#"
+          ? p.product_url
+          : `https://www.amazon.sa/s?k=${encodeURIComponent(p.title)}`;
+
+        return `
+          <article class="product-card">
+            <div>
+              <div class="card-top-ribbon">
+                <span class="bestseller-flag">#${p.rank} Best Seller</span>
+                ${trendHtml}
+              </div>
+
+              <div class="card-visual">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div class="visual-icon-box" aria-hidden="true">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span class="platform-tag">${escapeHtml(p.platform)}</span>
+                    <div class="category-label">${escapeHtml(p.category)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <h2 class="product-title" title="${escapeHtml(p.title)}">${escapeHtml(p.title)}</h2>
+
+                <div class="rating-row">
+                  <span class="stars" aria-label="${p.rating} out of 5 stars">${renderStars(p.rating)}</span>
+                  <span class="reviews-count">${p.reviews.toLocaleString()}</span>
+                </div>
+
+                <div class="deal-badge-row">
+                  <span class="deal-pill">-${p.discount_pct}%</span>
+                  <span class="deal-text">Limited Gulf Deal</span>
+                </div>
+
+                <div class="price-row">
+                  <div>
+                    <span class="currency">SAR</span>
+                    <span class="price-whole">${p.price_sar.toFixed(0)}</span>
+                  </div>
+                  <span class="orig-price">List: SAR ${p.original_price_sar.toFixed(0)}</span>
+                </div>
+
+                <div class="winner-meter">
+                  <div class="meter-header">
+                    <span>Winner Score</span>
+                    <span class="meter-score">${p.winner_score} / 100</span>
+                  </div>
+                  <div class="meter-track">
+                    <div class="meter-fill" style="width: ${Math.min(100, Math.max(10, p.winner_score))}%"></div>
+                  </div>
+                </div>
+
+                <div class="insight-box">${escapeHtml(p.insight)}</div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a href="${escapeHtml(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-amz-primary">
+                View on ${escapeHtml(p.platform)}
+              </a>
+              <button type="button" class="btn-amz-secondary" onclick="openModalByIndex(${idx})">
+                Winner Analytics
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      window.__currentFiltered = filtered;
+    }
+
+    function openModalByIndex(idx) {
+      if (window.__currentFiltered && window.__currentFiltered[idx]) {
+        openProductModal(window.__currentFiltered[idx]);
+      }
+    }
+
+    async function initStore() {
+      const fallbackRaw = JSON.parse(document.getElementById("fallback-data").textContent);
+      try {
+        const res = await fetch("./gulf_top_100_winners.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("Feed not found");
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.products || data.items || []);
+        if (list.length > 0) {
+          allProducts = list.map(normalizeItem);
+          document.getElementById("kpiFeedStatus").textContent = "Live JSON";
+        } else {
+          allProducts = fallbackRaw.map(normalizeItem);
+          document.getElementById("kpiFeedStatus").textContent = "Built-in Feed";
+        }
+      } catch (err) {
+        allProducts = fallbackRaw.map(normalizeItem);
+        document.getElementById("kpiFeedStatus").textContent = "Built-in Feed";
+      }
+
+      populateCategories(allProducts);
+      updateKPIs(allProducts);
+      renderGrid();
+    }
+
+    // Event Listeners
+    document.querySelectorAll("#platformPills .pill-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#platformPills .pill-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedPlatform = btn.dataset.platform;
+        document.getElementById("platformSelect").value = selectedPlatform;
+        renderGrid();
+      });
+    });
+
+    document.getElementById("platformSelect").addEventListener("change", (e) => {
+      selectedPlatform = e.target.value;
+      document.querySelectorAll("#platformPills .pill-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.platform === selectedPlatform);
+      });
+      renderGrid();
+    });
+
+    document.getElementById("categoryFilter").addEventListener("change", (e) => {
+      selectedCategory = e.target.value;
+      renderGrid();
+    });
+
+    document.getElementById("sortSelect").addEventListener("change", (e) => {
+      sortBy = e.target.value;
+      renderGrid();
+    });
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      renderGrid();
+    });
+
+    document.getElementById("searchBtn").addEventListener("click", () => {
+      searchQuery = document.getElementById("searchInput").value;
+      renderGrid();
+    });
+
+    document.getElementById("closeModalBtn").addEventListener("click", () => {
+      document.getElementById("detailModal").classList.remove("open");
+    });
+
+    document.getElementById("detailModal").addEventListener("click", (e) => {
+      if (e.target.id === "detailModal") {
+        document.getElementById("detailModal").classList.remove("open");
+      }
+    });
+
+    initStore();
+  </script>
+</body>
+</html>
